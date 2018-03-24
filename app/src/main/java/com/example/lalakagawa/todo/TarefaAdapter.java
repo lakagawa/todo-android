@@ -16,15 +16,27 @@ import java.util.List;
 
 public class TarefaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
+    private final TarefaCallback tarefaCallback;
     private List<TarefaModelo> lista = new ArrayList<>();
 
-    public TarefaAdapter(List<TarefaModelo> lista) {
+    public interface TarefaCallback{
+        void aoAtualizar(TarefaModelo tarefa);
+    }
+
+    public TarefaAdapter(List<TarefaModelo> lista, TarefaCallback callback) {
         this.lista = lista;
+        this.tarefaCallback = callback;
     }
 
     public void AdicionaTarefaNaLista(TarefaModelo tarefa){
         lista.add(tarefa);
         notifyDataSetChanged();
+    }
+
+    public TarefaModelo removerItem(int adapterPosition){
+        TarefaModelo itemRemovido = lista.remove(adapterPosition);
+        notifyItemRemoved(adapterPosition);
+        return itemRemovido;
     }
 
     @NonNull
@@ -35,13 +47,16 @@ public class TarefaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         return new TarefaViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_lista_tarefa, parent, false));
     }
 
-    private void addChangeListenerForCheckBox(final CheckBox chkExecutado, final TextView txtDescricao) {
+    private void addChangeListenerForCheckBox(final CheckBox chkExecutado, final TextView txtDescricao, final int posicao) {
         chkExecutado.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 final int paintFlags = isChecked
                         ? txtDescricao.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG
                         : Paint.LINEAR_TEXT_FLAG;
+                TarefaModelo tarefaModelo = lista.get(posicao);
+                tarefaModelo.setExecutado(isChecked);
+                tarefaCallback.aoAtualizar(tarefaModelo);
 
                 txtDescricao.setPaintFlags(paintFlags);
             }
@@ -52,6 +67,9 @@ public class TarefaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         TarefaModelo tarefaModelo = lista.get(position);
         TarefaViewHolder vh = (TarefaViewHolder) holder;
+
+        addChangeListenerForCheckBox(vh.chkExecutado, vh.txtDescricao, position);
+
         vh.txtDescricao.setText(tarefaModelo.getDescricao());
         vh.chkExecutado.setChecked(tarefaModelo.isExecutado());
     }
