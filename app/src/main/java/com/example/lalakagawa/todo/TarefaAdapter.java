@@ -36,6 +36,7 @@ public class TarefaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public TarefaModelo removerItem(int adapterPosition){
         TarefaModelo itemRemovido = lista.remove(adapterPosition);
         notifyItemRemoved(adapterPosition);
+        notifyItemRangeChanged(adapterPosition, lista.size());
         return itemRemovido;
     }
 
@@ -47,18 +48,18 @@ public class TarefaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         return new TarefaViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_lista_tarefa, parent, false));
     }
 
-    private void addChangeListenerForCheckBox(final CheckBox chkExecutado, final TextView txtDescricao, final int posicao) {
-        chkExecutado.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+    private void addChangeListenerForCheckBox(final TarefaViewHolder vh) {
+        vh.chkExecutado.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 final int paintFlags = isChecked
-                        ? txtDescricao.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG
+                        ? vh.txtDescricao.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG
                         : Paint.LINEAR_TEXT_FLAG;
-                TarefaModelo tarefaModelo = lista.get(posicao);
+                TarefaModelo tarefaModelo = lista.get(vh.getAdapterPosition());
                 tarefaModelo.setExecutado(isChecked);
                 tarefaCallback.aoAtualizar(tarefaModelo);
 
-                txtDescricao.setPaintFlags(paintFlags);
+                vh.txtDescricao.setPaintFlags(paintFlags);
             }
         });
     }
