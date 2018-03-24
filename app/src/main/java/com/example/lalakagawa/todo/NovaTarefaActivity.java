@@ -29,10 +29,15 @@ public class NovaTarefaActivity extends AppCompatActivity implements View.OnClic
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.btnIncluirNovaTarefa){
-            Intent intent = new Intent();
+            TarefaModelo tarefaModelo = new TarefaModelo(edtNovaTarefa.getText().toString(), false);
 
-            //intent.putExtra(CHAVE_NOVA_TAREFA, edtNovaTarefa.getText().toString());
-            intent.putExtra(CHAVE_NOVA_TAREFA, new TarefaModelo(edtNovaTarefa.getText().toString(), false));
+            AppDatabase appDatabase = AppDatabase.appDatabaseInstance(this);
+            TarefaDao dao = appDatabase.getTarefaDao();
+            long id = dao.inserirTarefa(tarefaModelo);
+            tarefaModelo.setId(id);
+
+            Intent intent = new Intent();
+            intent.putExtra(CHAVE_NOVA_TAREFA, tarefaModelo);
 
             setResult(Activity.RESULT_OK, intent);
             finish();

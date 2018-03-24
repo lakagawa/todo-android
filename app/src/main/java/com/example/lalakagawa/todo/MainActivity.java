@@ -38,8 +38,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void inicializaLista(){
-        List<TarefaModelo> lista = new ArrayList<TarefaModelo>();
-
+        List<TarefaModelo> lista = AppDatabase.appDatabaseInstance(this).getTarefaDao().getListaDeTarefas();
         adapter = new TarefaAdapter(lista);
         LinearLayoutManager llm = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         rvListaTarefa.setLayoutManager(llm);
@@ -54,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
                adapter.AdicionaTarefaNaLista(tarefaModelo);
 
-                Toast.makeText(this, tarefaModelo.getDescricao(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, tarefaModelo.getDescricao(), Toast.LENGTH_SHORT).show();
             }
         }
     }
